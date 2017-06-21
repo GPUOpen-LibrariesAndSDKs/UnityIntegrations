@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{98A964D5-57FC-4396-8730-BF94BE449B03}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>AmfUnityPlugin</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformToolset>v120</PlatformToolset>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformToolset>v120</PlatformToolset>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;VIDEOPLAYERAMF_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)/source/AMF/amf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;VIDEOPLAYERAMF_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)/source/AMF/amf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;VIDEOPLAYERAMF_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)/source/AMF/amf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;VIDEOPLAYERAMF_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)/source/AMF/amf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\AMF\amf\public\common\AMFFactory.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\AMFSTL.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\DataStreamFactory.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\DataStreamFile.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\DataStreamMemory.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\IOCapsImpl.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\PropertyStorageExImpl.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\Thread.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\TraceAdapter.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\common\Windows\ThreadWindows.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\AudioPresenter.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParser.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH264.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH265.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\CmdLogger.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\ParametersStorage.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\Pipeline.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\PlaybackPipelineBase.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\VideoPresenter.cpp" />
+    <ClCompile Include="..\source\Pipeline\AudioPresenterBuffer.cpp" />
+    <ClCompile Include="..\source\Pipeline\PlaybackPipeline.cpp" />
+    <ClCompile Include="..\source\Pipeline\UnityAVPipeline.cpp" />
+    <ClCompile Include="..\source\Pipeline\VideoPresenterTexture.cpp" />
+    <ClCompile Include="..\source\AmfUnityPlugin.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\AMF\amf\public\common\AMFFactory.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\AMFSTL.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\ByteArray.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\DataStream.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\DataStreamFile.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\DataStreamMemory.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\InterfaceImpl.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\IOCapsImpl.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\ObservableImpl.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\PropertyStorageExImpl.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\PropertyStorageImpl.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\Thread.h" />
+    <ClInclude Include="..\source\AMF\amf\public\common\TraceAdapter.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\AudioPresenter.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParser.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH264.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH265.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\CmdLogger.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\ParametersStorage.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\Pipeline.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\PlaybackPipelineBase.h" />
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\VideoPresenter.h" />
+    <ClInclude Include="..\source\Pipeline\AudioPresenterBuffer.h" />
+    <ClInclude Include="..\source\Pipeline\PlaybackPipeline.h" />
+    <ClInclude Include="..\source\Pipeline\UnityAVPipeline.h" />
+    <ClInclude Include="..\source\Pipeline\VideoPresenterTexture.h" />
+    <ClInclude Include="..\source\Unity\IUnityEventQueue.h" />
+    <ClInclude Include="..\source\Unity\IUnityGraphics.h" />
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D11.h" />
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D12.h" />
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D9.h" />
+    <ClInclude Include="..\source\Unity\IUnityGraphicsMetal.h" />
+    <ClInclude Include="..\source\Unity\IUnityInterface.h" />
+    <ClInclude Include="..\source\Utils\ImageData.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

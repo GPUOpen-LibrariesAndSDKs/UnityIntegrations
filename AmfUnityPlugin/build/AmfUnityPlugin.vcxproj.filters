@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\AMF\amf\public\common\AMFFactory.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\AMFSTL.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\DataStreamFactory.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\DataStreamFile.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\DataStreamMemory.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\AudioPresenter.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParser.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH264.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH265.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\CmdLogger.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\ParametersStorage.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\Pipeline.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\PlaybackPipelineBase.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\VideoPresenter.cpp">
+      <Filter>AMF\samples\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\IOCapsImpl.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\PropertyStorageExImpl.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\Thread.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\TraceAdapter.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\common\Windows\ThreadWindows.cpp">
+      <Filter>AMF\public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pipeline\AudioPresenterBuffer.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pipeline\PlaybackPipeline.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pipeline\UnityAVPipeline.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pipeline\VideoPresenterTexture.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AmfUnityPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\AMF\amf\public\common\AMFFactory.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\AMFSTL.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\ByteArray.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\DataStream.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\DataStreamFile.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\DataStreamMemory.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\AudioPresenter.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParser.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH264.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\BitStreamParserH265.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\CmdLogger.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\ParametersStorage.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\Pipeline.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\PlaybackPipelineBase.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\VideoPresenter.h">
+      <Filter>AMF\samples\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\InterfaceImpl.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\IOCapsImpl.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\ObservableImpl.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\PropertyStorageExImpl.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\PropertyStorageImpl.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\Thread.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\common\TraceAdapter.h">
+      <Filter>AMF\public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pipeline\AudioPresenterBuffer.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pipeline\PlaybackPipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pipeline\UnityAVPipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pipeline\VideoPresenterTexture.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityEventQueue.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphics.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D9.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D11.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D12.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsMetal.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityInterface.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Utils\ImageData.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="AMF">
+      <UniqueIdentifier>{8f402c8b-7efe-4158-bf7d-49961b622661}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AMF\public">
+      <UniqueIdentifier>{990ba02b-d06c-49fd-8886-b7f5f64257ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AMF\public\common">
+      <UniqueIdentifier>{a6d14799-1916-45ff-afbe-fe27315621c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AMF\samples">
+      <UniqueIdentifier>{9db96b02-d9ae-4fca-b024-3073730ae09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AMF\samples\common">
+      <UniqueIdentifier>{1905acf0-812f-490f-92a2-a9f9bf516c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pipeline">
+      <UniqueIdentifier>{0cbb9d52-7408-477d-8436-ed61a5b2399d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{421a57a2-b87c-4a95-bc37-dcfcee9d5d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Unity">
+      <UniqueIdentifier>{4cf7ba57-dd73-400f-98aa-b870c60857d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{b2c56999-29ac-47b8-848d-91e1154513be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{288671a3-a2d9-4fbd-9dcb-0753b6154839}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
