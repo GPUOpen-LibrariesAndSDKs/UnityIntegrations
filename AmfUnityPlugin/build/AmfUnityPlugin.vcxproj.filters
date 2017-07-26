@@ -73,6 +73,15 @@
     <ClCompile Include="..\source\AmfUnityPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\Ambisonic2SRendererImpl.cpp">
+      <Filter>AMF\public\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\convolution.cpp">
+      <Filter>AMF\public\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\HRTFtable.cpp">
+      <Filter>AMF\public\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\AMF\amf\public\common\AMFFactory.h">
@@ -177,6 +186,15 @@
     <ClInclude Include="..\source\Utils\ImageData.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\Ambisonic2SRendererImpl.h">
+      <Filter>AMF\public\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\convolution.h">
+      <Filter>AMF\public\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\HRTFtable.h">
+      <Filter>AMF\public\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="AMF">
@@ -208,6 +226,9 @@
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{288671a3-a2d9-4fbd-9dcb-0753b6154839}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AMF\public\Components">
+      <UniqueIdentifier>{6acbbe2e-0c5c-4294-a53b-9c5f38fb7e1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

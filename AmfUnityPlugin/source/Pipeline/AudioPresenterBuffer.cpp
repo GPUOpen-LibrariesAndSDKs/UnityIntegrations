@@ -34,20 +34,19 @@
 
 using namespace amf;
 
-#define MAX_BUFFER_LEAD 100000 // 10 seconds
+#define MAX_BUFFER_LEAD 10 // seconds
+#define MAX_QUEUE_LENGTH 3 // each element in the queue is ~0.23ms real time
 
 //-------------------------------------------------------------------------------------------------
 AudioPresenterBuffer::AudioPresenterBuffer()
-	: m_lastBufferPts(-1),
-	m_audioPosition(0),
-	m_startPts(-1)
+	: m_audioPosition(0)
+	, m_isSeeking(false)
 {
 }
 
 //-------------------------------------------------------------------------------------------------
 AudioPresenterBuffer::~AudioPresenterBuffer()
 {
-	m_audioData.clear();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -75,34 +74,23 @@ AMF_RESULT AudioPresenterBuffer::SubmitInput(amf::AMFData* pData)
 		m_audioBuffer = static_cast<AMFAudioBuffer*>(pData);
 		amf_pts currentPts = m_audioBuffer->GetPts();
 
-		// if first buffer
-		if (m_startPts <= 0)
+		// Store audio data as seperate channels
+
+		// Prevent amf from getting too far ahead
+		while (m_audioBufferQueue.size() >= MAX_QUEUE_LENGTH)
 		{
-			m_startPts = currentPts;
+			// if queue is maxed out wait approx. length of one buffer
+			amf_pts sleepTime = 0;
+			sleepTime = m_audioBufferQueue.front()->GetDuration();
+			m_Waiter.Wait(sleepTime);
 		}
+		Lock();
+		m_audioBufferQueue.push(m_audioBuffer);
+		Unlock();
 
-		if (m_lastBufferPts < currentPts)
+		if (m_isSeeking)
 		{
-
-			amf_int32 numSamples = m_audioBuffer->GetSampleCount();
-			amf_int32 sampleSize = m_audioBuffer->GetSampleSize();
-			amf_int32 dataSize = numSamples * sampleSize * GetChannels(); //in bytes
-			
-			if (m_audioData.capacity() < m_audioData.size() + numSamples * GetChannels())
-			{
-				Lock();
-				m_audioData.reserve(m_audioData.size() + GetSampleRate() * GetChannels() * (MAX_BUFFER_LEAD / 10000)); //reserve ten seconds of samples
-				Unlock();
-				m_Waiter.Wait(MAX_BUFFER_LEAD / 2);
-			}
-
-			float* bufferData = (float*)m_audioBuffer->GetNative();
-			Lock();
-			m_audioData.insert(m_audioData.end(), bufferData, bufferData + numSamples * GetChannels());
-			Unlock();
-
-			m_lastBufferPts = currentPts;
-
+			Seek(m_seekGoal);
 		}
 	}
 
@@ -120,6 +108,7 @@ AMF_RESULT AudioPresenterBuffer::Flush()
 AMF_RESULT AudioPresenterBuffer::Init()
 {
 	AMF_RESULT err = AMF_OK;
+
 	return err;
 }
 
@@ -143,21 +132,39 @@ AMF_RESULT AudioPresenterBuffer::Resume(amf_pts currentTime)
 //-------------------------------------------------------------------------------------------------
 AMF_RESULT AudioPresenterBuffer::Seek(amf_pts pts)
 {
-
-	if (pts < m_startPts) // pts is before clip starts
+	m_seekGoal = pts;
+	if (m_audioBufferQueue.empty())
 	{
 		m_audioPosition = 0;
+		return AMF_OK;
 	}
-	else if (pts > m_lastBufferPts) //pts is later than current buffer
-	{
-		m_audioPosition = m_audioData.size();
+	Lock();
+	if (pts < m_audioBufferQueue.front()->GetPts() || pts > m_audioBufferQueue.back()->GetPts() + m_audioBufferQueue.back()->GetDuration())
+	{  // before oldest or after most recent, clear out the queue
+		m_audioPosition = 0;
+		m_isSeeking = true;
+		while (!m_audioBufferQueue.empty())
+		{
+			m_audioBufferQueue.pop();
+		}
 	}
 	else
-	{
-		//in scope, calc new m_audioPosition
-		m_audioPosition = static_cast<size_t>((pts - m_startPts) * GetChannels() * GetSampleRate() / AMF_SECOND);
+	{ 
+		while (!m_audioBufferQueue.empty())
+		{
+			if (pts > m_audioBufferQueue.front()->GetPts() + m_audioBufferQueue.front()->GetDuration())
+			{
+				m_audioBufferQueue.pop();
+			}
+			else
+			{
+				m_audioPosition = ((pts - m_audioBufferQueue.front()->GetPts()) / AMF_SECOND) * GetSampleRate() * GetChannels();
+				break;
+			}
+		}
+		m_isSeeking = false;
 	}
-
+	Unlock();
 	return AMF_OK;
 }
 
@@ -194,15 +201,36 @@ void AudioPresenterBuffer::Unlock(){
 //-------------------------------------------------------------------------------------------------
 void AudioPresenterBuffer::StoreNewAudio(float* audioOut, int outSize)
 {
-	if (!m_audioData.empty())
+	if (m_audioBufferQueue.empty())
 	{
-		if (m_audioPosition + outSize > m_audioData.size())
+		return;
+	}
+	Lock();
+	size_t remainingSamples = m_audioBufferQueue.front()->GetSampleCount() * m_audioBufferQueue.front()->GetChannelCount() - m_audioPosition;
+
+	// copy data
+	while (outSize > remainingSamples)
+	{
+		// copy what's left in current buffer
+		memcpy(audioOut, (float*)m_audioBufferQueue.front()->GetNative() + m_audioPosition, remainingSamples * sizeof(float));
+
+		// prep for next buffer
+		audioOut += remainingSamples;
+		outSize = outSize - (int) remainingSamples;
+		m_audioPosition = 0;
+
+		m_audioBufferQueue.pop();
+		if (m_audioBufferQueue.empty())
 		{
 			return;
 		}
-		Lock();
-		memcpy(audioOut, m_audioData.data() + m_audioPosition, outSize * sizeof(float));
-		Unlock();
-		m_audioPosition += outSize;
+		remainingSamples = m_audioBufferQueue.front()->GetSampleCount() * m_audioBufferQueue.front()->GetChannelCount();
+		
 	}
+
+	// copy what's needed from new buffer
+	memcpy(audioOut, (float*)m_audioBufferQueue.front()->GetNative() + m_audioPosition, outSize * sizeof(float));
+
+	m_audioPosition += outSize;
+	Unlock();
 }

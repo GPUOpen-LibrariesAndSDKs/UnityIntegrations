@@ -33,7 +33,6 @@
 #pragma once
 
 #include "public/samples/CPPSamples/common/AudioPresenter.h"
-
 #include "public/common/AMFSTL.h"
 
 enum AMF_AUDIO_PLAYBACK_STATUS
@@ -45,8 +44,6 @@ enum AMF_AUDIO_PLAYBACK_STATUS
 	AMFAPS_STOPPING_STATUS = 7,
 	AMFAPS_EOF_STATUS = 8,
 };
-
-
 
 class AudioPresenterBuffer: public AudioPresenter
 {
@@ -77,25 +74,25 @@ public:
 	void Unlock();
 	void StoreNewAudio(float* audioOut, int outSize);
 
-	unsigned GetChannels() const { return 2; }
+
 	unsigned GetSampleRate() const { return 48000; }
+	unsigned GetSampleFormat() const { return amf::AMFAF_FLT; }
 	unsigned GetBitsPerSample() const { return sizeof(amf_float) * 8; }
 	unsigned GetChannelLayout() const { return 3; } //Stereo
-	unsigned GetSampleFormat() const { return amf::AMFAF_FLT; }
+	unsigned GetChannels() const { return 2; }
 
 private:
 
 	amf::AMFAudioBufferPtr		m_audioBuffer;
 	amf::AMFCriticalSection		m_sect;
-	amf_pts						m_lastBufferPts;
 	amf::AMFPreciseWaiter		m_Waiter;
 
-	// Controls for Seek/etc
-	amf_pts						m_startPts;
+	bool		m_isSeeking;
+	amf_pts		m_seekGoal;
 
 	// Audio data for unity
-	std::vector<float>			m_audioData;
-	size_t						m_audioPosition;
+	std::queue<amf::AMFAudioBufferPtr>	m_audioBufferQueue;
+	size_t								m_audioPosition;
 };
 
 typedef std::shared_ptr<AudioPresenterBuffer> AudioPresenterBufferPtr;

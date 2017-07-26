@@ -66,14 +66,25 @@
 //
 // Create an empty GameObject and attach this script to it. In the inspector,
 // assign the materials used for the left and right eye spheres. Select the
-// appropriate Stereoscopic Format that matches the way the video is
-// packaged, e.g. Left eye on the top, right eye on the bottom (Top Bottom).
+// appropriate Stereoscopic Format that matches the way the video is packaged, 
+// e.g. Left eye on the top, right eye on the bottom (Top Bottom). Change the 
+// cameras in the heirarchy to be children of this empty GameObject. It should 
+// look similar to:
+//
+//  LeftDisplaySphere
+//  RightDisplaySphere
+//  Amf360Player
+//      LeftCamera
+//      RightCamera
 //
 // If the video is not aligned to the center of your screen initially, consider
-// changing the sphere's starting rotation. If the video is not correctly
+// changing the display sphere's starting rotation. If the video is not correctly
 // aligned on the sphere, such as being upside down or backwards, consider
 // changing the offset and scaling values of the materials set in the
 // 'CreateTextureAndPassToPlugin' method to match the sphere construction.
+//
+// The only additional step needed to enable ambisonic audio is to select the
+// checkbox in the inspector.
 // -------------------------------------------------------------------------------
 
 using UnityEngine;
@@ -84,305 +95,321 @@ using System.Runtime.InteropServices;
 
 public class Amf360UnityPlugin : MonoBehaviour
 {
-	// Extern functions
-	[DllImport("AmfUnityPlugin")]
-	private static extern void SetTextureFromUnity(int id, IntPtr texture, int w, int h);
-	[DllImport("AmfUnityPlugin")]
-	private static extern IntPtr GetRenderEventFunc();
+    // Extern functions
+    [DllImport("AmfUnityPlugin")]
+    private static extern void SetTextureFromUnity(int id, IntPtr texture, int w, int h);
+    [DllImport("AmfUnityPlugin")]
+    private static extern IntPtr GetRenderEventFunc();
 
-	// Execute operations are:
-	// init, file://, terminate, play, pause, step, stop
-	[DllImport("AmfUnityPlugin")]
-	private static extern void PipelineCreate(int id);
-	[DllImport("AmfUnityPlugin")]
-	private static extern void PipelineDestroy(int id);
-	[DllImport("AmfUnityPlugin")]
-	private static extern int PipelineExecute(int id, [MarshalAs(UnmanagedType.LPWStr)] string cmd);
+    // Execute operations are:
+    // init, file://, terminate, play, pause, step, stop
+    [DllImport("AmfUnityPlugin")]
+    private static extern void PipelineCreate(int id);
+    [DllImport("AmfUnityPlugin")]
+    private static extern void PipelineDestroy(int id);
+    [DllImport("AmfUnityPlugin")]
+    private static extern int PipelineExecute(int id, [MarshalAs(UnmanagedType.LPWStr)] string cmd);
 
-	// Query types are:
-	// fps, progressSize, progressPosition, texWidth, texHeight, sampleRate,
-	// channels, hasAudio, initialized, running
-	[DllImport("AmfUnityPlugin")]
-	private static extern float PipelineQuery(int id, [MarshalAs(UnmanagedType.LPWStr)] string type);
+    // Query types are:
+    // fps, progressSize, progressPosition, texWidth, texHeight, sampleRate,
+    // channels, hasAudio, initialized, running
+    [DllImport("AmfUnityPlugin")]
+    private static extern float PipelineQuery(int id, [MarshalAs(UnmanagedType.LPWStr)] string type);
 
-	[DllImport("AmfUnityPlugin")]
-	private static extern int PipelineFillAudio(int id, ref float outData, int bufferSize);
+    [DllImport("AmfUnityPlugin")]
+    private static extern int PipelineFillAudio(int id, ref float outData, int bufferSize);
+    [DllImport("AmfUnityPlugin")]
+    private static extern int PipelineSetAmbiMode(int id, bool isAmbisonic);
+    [DllImport("AmfUnityPlugin")]
+    private static extern int PipelineSetAmbisonicAngles(int id, float theta, float phi, float rho);
 
-	// Public variables 
-	public string File;
-	public bool mute;
-	public Material leftEye;
-	public Material rightEye;
-	[Tooltip("Left/Right")]
-	public VideoFormat StereoFormat;
-	public enum VideoFormat
-	{
-		Mono,
-		SideBySideLF,
-		SideBySideRF,
-		OverUnderLT,
-		OverUnderRT
-	};
+    // Public variables
+    public string File;
+    public bool mute;
+    public bool isAmbisonic;
+    public Material leftEye;
+    public Material rightEye;
+    [Tooltip("Left/Right")]
+    public VideoFormat StereoFormat;
+    public enum VideoFormat
+    {
+        Mono,
+        SideBySideLF,
+        SideBySideRF,
+        OverUnderLT,
+        OverUnderRT
+    };
 
-	// Private variables
-	enum AVState { kNone, kInit, kPlay, kPause };
-	private AVState avState = AVState.kNone;
-	private int uniqueID = 0;
-	private bool playAudio = false;
-	private int samplerate = 48000;
-	private int channels = 2;
-	private AudioSource audioSource;
-	private AudioClip audioClip;
-	private Texture2D videoTexture;
+    // Private variables
+    enum AVState { kNone, kInit, kPlay, kPause };
+    private AVState avState = AVState.kNone;
+    private int uniqueID = 0;
+    private bool playAudio = false;
+    private int samplerate = 48000;
+    private int channels = 2;
+    private AudioSource audioSource;
+    private AudioClip audioClip;
+    private Texture2D videoTexture;
 
-	IEnumerator Start()
-	{
-		CheckPlatform();
-		//
-		PrintHelp();
-		//
-		uniqueID = GetUniqueID();
-		//
-		PipelineCreate(uniqueID);
+    IEnumerator Start()
+    {
+        CheckPlatform();
+        //
+        PrintHelp();
+        //
+        uniqueID = GetUniqueID();
+        //
+        PipelineCreate(uniqueID);
+        PipelineSetAmbiMode(uniqueID, isAmbisonic);
+        PipelineExecute(uniqueID, "file://" + File);
+        
+        PipelineExecute(uniqueID, "init");
+        if (PipelineQuery(uniqueID, "initialized")>0)
+        {
+            
+            // The following create methods query the pipeline
+            // information so these calls come after init above
+            CreateTextureAndPassToPlugin();
+            // Create audio objects if needed
+            playAudio = (PipelineQuery(uniqueID, "hasAudio") > 0.0f) && (!mute);
+            if (playAudio)
+            {
+                CreateAudio();
+            }
+            //
+            PipelineExecute(uniqueID, "play");
+            avState = AVState.kPlay;
+        }
+        else
+        {
+            print("Failed to initialize pipeline\n");
+        }
 
-		PipelineExecute(uniqueID, "file://" + File);
-		PipelineExecute(uniqueID, "init");
-		if (PipelineQuery(uniqueID, "initialized")>0)
-		{
-			PipelineExecute(uniqueID, "play");
-			// The following create methods query the pipeline
-			// information so these calls come after init above
-			CreateTextureAndPassToPlugin();
-			// Create audio objects if needed
-			playAudio = (PipelineQuery(uniqueID, "hasAudio") > 0.0f) && (!mute);
-			if (playAudio)
-			{
-				CreateAudio();
-			}
-			//
-			avState = AVState.kPause;
-		}
-		else
-		{
-			print("Failed to initialize pipeline\n");
-		}
+        if (isAmbisonic)
+        {
+            //Cursor.lockState = CursorLockMode.Locked;
+        }
+        yield return StartCoroutine("CallPluginAtEndOfFrames");
+    }
 
-		yield return StartCoroutine("CallPluginAtEndOfFrames");
-	}
+    void OnDestroy()
+    {
+        PipelineExecute(uniqueID, "terminate");
+        PipelineDestroy(uniqueID);
+    }
 
-	void OnDestroy()
-	{
-		PipelineExecute(uniqueID, "terminate");
-		PipelineDestroy(uniqueID);
-	}
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (AVState.kPlay == avState)
+            {
+                // Call ensures that pause is not reapplied
+                PipelineExecute(uniqueID, "pause");
+                //
+                if (playAudio)
+                {
+                    audioSource.Stop();
+                }
+                avState = AVState.kPause;
+            }
+            else if (AVState.kPause == avState)
+            {
+                // Call ensures that pause is not reapplied
+                PipelineExecute(uniqueID, "play");
+                //
+                if (playAudio)
+                {
+                    audioSource.Play();
+                }
+                avState = AVState.kPlay;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            PipelineExecute(uniqueID, "step");
+            //
+            if (playAudio)
+            {
+                audioSource.Stop();
+            }
+            avState = AVState.kPause;
+        }
 
-	void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			if (AVState.kPlay == avState)
-			{
-				// Call ensures that pause is not reapplied
-				PipelineExecute(uniqueID, "pause");
-				//
-				if (playAudio)
-				{
-					audioSource.Stop();
-				}
-				avState = AVState.kPause;
-			}
-			else if (AVState.kPause == avState)
-			{
-				// Call ensures that pause is not reapplied
-				PipelineExecute(uniqueID, "play");
-				//
-				if (playAudio)
-				{
-					audioSource.Play();
-				}
-				avState = AVState.kPlay;
-			}
-		}
-		else if (Input.GetKeyDown(KeyCode.RightArrow))
-		{
-			PipelineExecute(uniqueID, "step");
-			//
-			if (playAudio)
-			{
-				audioSource.Stop();
-			}
-			avState = AVState.kPause;
-		}
-	}
+        if (PipelineQuery(uniqueID, "isAmbisonic") > 0.0f)
+        {
+            // Pass in ambisonic angles
+            Vector3 localEuler = this.GetComponentInChildren<Camera>().transform.localEulerAngles;
+            PipelineSetAmbisonicAngles(uniqueID, -1 * localEuler.y, localEuler.x, localEuler.z);
+            Debug.Log(localEuler);
+        }
+    }
 
-	private void CreateTextureAndPassToPlugin()
-	{
-		// Find out the size of the video
-		int w = (int) PipelineQuery(uniqueID, "texWidth");
-		int h = (int) PipelineQuery(uniqueID, "texHeight");
+    private void CreateTextureAndPassToPlugin()
+    {
+        // Find out the size of the video
+        int w = (int) PipelineQuery(uniqueID, "texWidth");
+        int h = (int) PipelineQuery(uniqueID, "texHeight");
 
-		// Create a texture
-		videoTexture = new Texture2D(w, h, TextureFormat.BGRA32, false);
-		// Set point filtering just so we can see the pixels clearly
-		videoTexture.filterMode = FilterMode.Bilinear;
-		// Call Apply() so it's actually uploaded to the GPU
-		videoTexture.Apply();
+        // Create a texture
+        videoTexture = new Texture2D(w, h, TextureFormat.BGRA32, false);
+        // Set point filtering just so we can see the pixels clearly
+        videoTexture.filterMode = FilterMode.Bilinear;
+        // Call Apply() so it's actually uploaded to the GPU
+        videoTexture.Apply();
 
-		// Pass texture pointer to the plugin
-		SetTextureFromUnity(uniqueID, videoTexture.GetNativeTexturePtr(), videoTexture.width, videoTexture.height);
+        // Pass texture pointer to the plugin
+        SetTextureFromUnity(uniqueID, videoTexture.GetNativeTexturePtr(), videoTexture.width, videoTexture.height);
 
-		// Set up materials for left and right eyes
-		leftEye.mainTexture = videoTexture;
-		rightEye.mainTexture = videoTexture;
+        // Set up materials for left and right eyes
+        leftEye.mainTexture = videoTexture;
+        rightEye.mainTexture = videoTexture;
 
-		switch (StereoFormat)
-		{
-			// Monoscopic
-			case (VideoFormat.Mono):
-				leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-				leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+        switch (StereoFormat)
+        {
+            // Monoscopic
+            case (VideoFormat.Mono):
+                leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
 
-				rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-				rightEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
-				break;
-			// Left eye on left
-			case (VideoFormat.SideBySideLF):
-				leftEye.SetTextureOffset("_MainTex", new Vector2(0.5f, 1));
-				leftEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
+                rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                rightEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+                break;
+            // Left eye on left
+            case (VideoFormat.SideBySideLF):
+                leftEye.SetTextureOffset("_MainTex", new Vector2(0.5f, 1));
+                leftEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
 
-				rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-				rightEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
-				break;
-			// Left eye on right
-			case (VideoFormat.SideBySideRF):
-				leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-				leftEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
+                rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                rightEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
+                break;
+            // Left eye on right
+            case (VideoFormat.SideBySideRF):
+                leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                leftEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
 
-				rightEye.SetTextureOffset("_MainTex", new Vector2(0.5f, 1));
-				rightEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
-				break;
-			// Left eye on Top
-			case (VideoFormat.OverUnderLT):
-				leftEye.SetTextureOffset("_MainTex", new Vector2(1, 0.5f));
-				leftEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
+                rightEye.SetTextureOffset("_MainTex", new Vector2(0.5f, 1));
+                rightEye.SetTextureScale("_MainTex", new Vector2(-0.5f, -1));
+                break;
+            // Left eye on Top
+            case (VideoFormat.OverUnderLT):
+                leftEye.SetTextureOffset("_MainTex", new Vector2(1, 0.5f));
+                leftEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
 
-				rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-				rightEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
-				break;
-			// Left eye on Bottom
-			case (VideoFormat.OverUnderRT):
-				leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-				leftEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
+                rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                rightEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
+                break;
+            // Left eye on Bottom
+            case (VideoFormat.OverUnderRT):
+                leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                leftEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
 
-				rightEye.SetTextureOffset("_MainTex", new Vector2(1, 0.5f));
-				rightEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
-				break;
-		}
-	}
+                rightEye.SetTextureOffset("_MainTex", new Vector2(1, 0.5f));
+                rightEye.SetTextureScale("_MainTex", new Vector2(-1, -0.5f));
+                break;
+        }
+    }
 
-	private IEnumerator CallPluginAtEndOfFrames()
-	{
-		while (true)
-		{
-			// Wait until all frame rendering is done
-			yield return new WaitForEndOfFrame();
+    private IEnumerator CallPluginAtEndOfFrames()
+    {
+        while (true)
+        {
+            // Wait until all frame rendering is done
+            yield return new WaitForEndOfFrame();
 
-			// Issue a plugin event with arbitrary integer identifier.
-			// The plugin can distinguish between different
-			// things it needs to do based on this ID.
-			// For our simple plugin, it does not matter which ID we pass here.
-			GL.IssuePluginEvent(GetRenderEventFunc(), uniqueID);
-		}
-	}
+            // Issue a plugin event with arbitrary integer identifier.
+            // The plugin can distinguish between different
+            // things it needs to do based on this ID.
+            // For our simple plugin, it does not matter which ID we pass here.
+            GL.IssuePluginEvent(GetRenderEventFunc(), uniqueID);
+        }
+    }
 
-	private void CreateAudio()
-	{
-		// Query the audio setup of the video
-		samplerate = (int) PipelineQuery(uniqueID, "sampleRate");
-		channels = (int) PipelineQuery(uniqueID, "channels");
+    private void CreateAudio()
+    {
+        // Query the audio setup of the video
+        samplerate = (int) PipelineQuery(uniqueID, "sampleRate");
+        channels = (int) PipelineQuery(uniqueID, "channels");
 
-		// Create streaming audio clip
-		audioClip =
-			 AudioClip.Create("StreamingAudio", samplerate * channels * 10, channels, samplerate, true);
-		// Create audio source
-		audioSource = gameObject.AddComponent<AudioSource>();
-		audioSource.volume = 1.0f;
-		audioSource.spatialBlend = 1.0f;
-		audioSource.ignoreListenerVolume = false;
-		audioSource.loop = true;
-		audioSource.clip = audioClip;
-		audioSource.maxDistance = 10;
-		audioSource.Play();
-	}
+        // Create streaming audio clip
+        audioClip =
+             AudioClip.Create("StreamingAudio", samplerate * channels * 10, channels, samplerate, true);
+        // Create audio source
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = true;
+        audioSource.loop = true;
+        audioSource.clip = audioClip;
+        audioSource.Play();
+    }
 
-	void OnAudioFilterRead(float[] data, int channels)
-	{
-		PipelineFillAudio(uniqueID, ref data[0], data.Length);
-	}
+    void OnAudioFilterRead(float[] data, int channels)
+    {
+        PipelineFillAudio(uniqueID, ref data[0], data.Length);
+    }
 
-	void HandlePause(bool pauseStatus)
-	{
-		if (AVState.kNone == avState)
-		{
-			return;
-		}
-		//
-		if (pauseStatus)
-		{
-			avState = AVState.kPause;
-		}
-		else
-		{
-			avState = AVState.kPlay;
-		}
-		//
-		if (AVState.kPause == avState)
-		{
-			PipelineExecute(uniqueID, "pause");
-			//
-			if (playAudio)
-			{
-				audioSource.Stop();
-			}
-		}
-		else if (AVState.kPlay == avState)
-		{
-			PipelineExecute(uniqueID, "play");
-			//
-			if (playAudio)
-			{
-				audioSource.Play();
-			} 
-		}
-	}
+    void HandlePause(bool pauseStatus)
+    {
+        if (AVState.kNone == avState)
+        {
+            return;
+        }
+        //
+        if (pauseStatus)
+        {
+            avState = AVState.kPause;
+        }
+        else
+        {
+            avState = AVState.kPlay;
+        }
+        //
+        if (AVState.kPause == avState)
+        {
+            PipelineExecute(uniqueID, "pause");
+            //
+            if (playAudio)
+            {
+                audioSource.Stop();
+            }
+        }
+        else if (AVState.kPlay == avState)
+        {
+            PipelineExecute(uniqueID, "play");
+            //
+            if (playAudio)
+            {
+                audioSource.Play();
+            } 
+        }
+    }
 
-	void OnApplicationFocus(bool hasFocus)
-	{
-		HandlePause(!hasFocus);
-	}
+    void OnApplicationFocus(bool hasFocus)
+    {
+        HandlePause(!hasFocus);
+    }
 
-	void OnApplicationPause(bool pauseStatus)
-	{
-		HandlePause(pauseStatus);
-	}
+    void OnApplicationPause(bool pauseStatus)
+    {
+        HandlePause(pauseStatus);
+    }
 
-	int GetUniqueID()
-	{
-		// Instance ID of an object is guaranteed to be unique
-		return GetInstanceID();
-	}
+    int GetUniqueID()
+    {
+        // Instance ID of an object is guaranteed to be unique
+        return GetInstanceID();
+    }
 
-	void PrintHelp()
-	{
-		print("Space bar toggles play/pause. Right arrow steps.");
-	}
+    void PrintHelp()
+    {
+        print("Space bar toggles play/pause. Right arrow steps.");
+    }
 
-	void CheckPlatform()
-	{
-		if ((Application.platform != RuntimePlatform.WindowsEditor) &&
-			(Application.platform != RuntimePlatform.WindowsPlayer) )
-		{
-			print("AmfUnityPlugin only works on Windows OS\n");
-		}
-	}
+    void CheckPlatform()
+    {
+        if ((Application.platform != RuntimePlatform.WindowsEditor) &&
+            (Application.platform != RuntimePlatform.WindowsPlayer))
+        {
+            print("AmfUnityPlugin only works on Windows OS\n");
+        }
+    }
 }

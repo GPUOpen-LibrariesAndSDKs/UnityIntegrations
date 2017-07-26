@@ -32,6 +32,7 @@
 #pragma once
 
 #include "public/samples/CPPSamples/common/PlaybackPipelineBase.h"
+#include "public/src/components/AmbisonicRenderer/Ambisonic2SRendererImpl.h"
 
 class PlaybackPipeline : public PlaybackPipelineBase
 {
@@ -52,25 +53,33 @@ public:
 	unsigned GetTextureHeight() const;
 
 	void GetAudioData(float* audioOut, int outSize)  const;
+	void SetAmbisonicAudio(bool isAmbisonic);
+	void SetAmbisonicAngles(float theta, float phi, float rho);
 
 	unsigned GetSampleRate() const;
 
 	unsigned GetChannels() const;
 
 	bool HasAudio() const;
+	bool isAmbisonic() const;
 
 protected:
 	// Initialization and creation methods
 
     AMF_RESULT InitContext(amf::AMF_MEMORY_TYPE) override;
-
+	
 	AMF_RESULT CreateVideoPresenter(amf::AMF_MEMORY_TYPE, amf_int64 bitRate, double fps) override;
 
     AMF_RESULT CreateAudioPresenter() override;
 
+	virtual AMF_RESULT  InitAudio(amf::AMFOutput* pOutput) override;
+	virtual AMF_RESULT  InitAudioPipeline(amf_uint32 iAudioStreamIndex, PipelineElementPtr pAudioSourceStream) override;
+	amf::AMFComponentPtr m_pAmbisonicRender;
+
 private:
-	void *m_device;
-	bool  m_hasAudio;
+	void*	m_device;
+	bool	m_hasAudio;
+	bool	m_ambisonicAudio;
 };
 
 typedef std::shared_ptr<PlaybackPipeline> PlaybackPipelinePtr;

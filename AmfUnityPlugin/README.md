@@ -2,6 +2,8 @@ Instructions for using AMF plugin for Unity.
 
 AmfUnityPlugin is a plugin using the Advanced Media Framework (AMF) SDK for hardware accelerated video and audio playback on AMD GPUs in Unity engine.
 
+--Install AMD driver 17.7.2 or later
+
 --Follow directions in both the source/AMF folder for including AMF and the source/Unity folder README.txt files to
 acquire the dependent source.
 
@@ -12,10 +14,10 @@ acquire the dependent source.
 
 From AMF:
 amf-component-ffmpeg64.dll
-avformat-57.dll
-avutil-55.dll
 avcodec-57.dll
+avformat-57.dll
 avresample-3.dll
+avutil-55.dll
 swresample-2.dll
 
 From plugin:

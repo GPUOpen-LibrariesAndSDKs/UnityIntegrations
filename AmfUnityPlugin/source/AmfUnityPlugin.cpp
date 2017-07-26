@@ -183,6 +183,31 @@ extern "C" float UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API PipelineQuery(int id
 }
 
 // --------------------------------------------------------------------------
+// Execute commands on the pipeline
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API PipelineSetAmbiMode(int id, bool isAmbisonic)
+{
+	UnityAVPipeline* avpipe = UnityAVPipeline::GetPipeline(id);
+	if (avpipe)
+	{
+		avpipe->SetAmbisonic(isAmbisonic);
+	}
+}
+
+// --------------------------------------------------------------------------
+// Execute commands on the pipeline
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API PipelineSetAmbisonicAngles(int id, float theta, float phi, float rho)
+{
+	UnityAVPipeline* avpipe = UnityAVPipeline::GetPipeline(id);
+	if (avpipe)
+	{
+		if (avpipe->PipelineQuery(L"isAmbisonic"))
+		{
+			avpipe->SetAmbisonicAngles(theta, phi, rho);
+		}
+	}
+}
+
+// --------------------------------------------------------------------------
 // Fill in the audio data for unity
 extern "C" UNITY_INTERFACE_EXPORT int UNITY_INTERFACE_API PipelineFillAudio(int id, float audioOut[], int bufferLength, int pipelineID)
 {

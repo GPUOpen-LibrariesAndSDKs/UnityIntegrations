@@ -144,6 +144,7 @@ void UnityAVPipeline::PipelineExecute(const wchar_t* cmd)
 		m_pipeline = std::make_unique<PlaybackPipeline>();
 		m_pipeline->SetParam(PlaybackPipeline::PARAM_NAME_INPUT, m_fileName.c_str());
 		m_pipeline->SetParam(PlaybackPipeline::PARAM_NAME_PRESENTER, amf::AMF_MEMORY_DX11);
+		m_pipeline->SetAmbisonicAudio(m_ambiAudio);
 		//
 		UpdateDLLSearchPaths();
 		//
@@ -247,6 +248,10 @@ float UnityAVPipeline::PipelineQuery(const wchar_t* type)
 	{	// Audio
 		result = (m_pipeline->HasAudio()) ? 1.0f : 0.0f;
 	}
+	else if (wcscmp(type, L"isAmbisonic") == 0)
+	{	// Audio
+		result = m_pipeline->isAmbisonic() ? 1.0f : 0.0f;
+	}
 	else if (wcscmp(type, L"initialized") == 0)
 	{	// Both
 		result = (float)initialized();
@@ -262,6 +267,20 @@ float UnityAVPipeline::PipelineQuery(const wchar_t* type)
 	DBSTREAMOUT("PipelineQuery: " << str_mod << type << " " << result << std::endl);
 
 	return result;
+}
+
+// --------------------------------------------------------------------------
+void UnityAVPipeline::SetAmbisonic(bool isAmbisonic)
+{
+	m_ambiAudio = isAmbisonic;
+}
+
+void UnityAVPipeline::SetAmbisonicAngles(float theta, float phi, float rho)
+{
+	if (initialized() && pipelineRunning())
+	{
+		m_pipeline->SetAmbisonicAngles(theta, phi, rho);
+	}
 }
 
 // --------------------------------------------------------------------------
@@ -337,6 +356,7 @@ UnityAVPipeline::UnityAVPipeline()
 	, m_width(0)
 	, m_height(0)
 	, m_isPaused(true)
+	, m_ambiAudio(false)
 {
 }
 

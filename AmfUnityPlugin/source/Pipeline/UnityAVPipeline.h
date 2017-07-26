@@ -55,7 +55,7 @@
 #include "PlaybackPipeline.h"
 
 // --------------------------------------------------------------------------
-// UnityAVPipeline singleton class. This class marshalls the data from
+// UnityAVPipeline class. This class marshalls the data from
 // the Unity UI into commands that are sent to the AMF AV pipeline.
 // This class sets up a DX11 pipeline.
 //
@@ -91,6 +91,9 @@ public:
 
 	void CopyResource();
 
+	void SetAmbisonic(bool isAmbisonic);
+	void SetAmbisonicAngles(float theta, float phi, float rho);
+
 	bool pipelineRunning();
 
 	bool initialized() const;
@@ -123,6 +126,7 @@ private:
 	std::unique_ptr<PlaybackPipeline> m_pipeline;
 
 	bool							m_isPaused;
+	bool							m_ambiAudio;
 };
 
 // --------------------------------------------------------------------------

@@ -165,6 +165,9 @@
     <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\Pipeline.cpp" />
     <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\PlaybackPipelineBase.cpp" />
     <ClCompile Include="..\source\AMF\amf\public\samples\CPPSamples\common\VideoPresenter.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\Ambisonic2SRendererImpl.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\convolution.cpp" />
+    <ClCompile Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\HRTFtable.cpp" />
     <ClCompile Include="..\source\Pipeline\AudioPresenterBuffer.cpp" />
     <ClCompile Include="..\source\Pipeline\PlaybackPipeline.cpp" />
     <ClCompile Include="..\source\Pipeline\UnityAVPipeline.cpp" />
@@ -194,6 +197,9 @@
     <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\Pipeline.h" />
     <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\PlaybackPipelineBase.h" />
     <ClInclude Include="..\source\AMF\amf\public\samples\CPPSamples\common\VideoPresenter.h" />
+    <ClInclude Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\Ambisonic2SRendererImpl.h" />
+    <ClInclude Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\convolution.h" />
+    <ClInclude Include="..\source\AMF\amf\public\src\components\AmbisonicRenderer\HRTFtable.h" />
     <ClInclude Include="..\source\Pipeline\AudioPresenterBuffer.h" />
     <ClInclude Include="..\source\Pipeline\PlaybackPipeline.h" />
     <ClInclude Include="..\source\Pipeline\UnityAVPipeline.h" />
