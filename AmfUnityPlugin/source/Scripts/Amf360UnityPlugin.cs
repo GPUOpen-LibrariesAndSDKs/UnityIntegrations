@@ -115,6 +115,10 @@ public class Amf360UnityPlugin : MonoBehaviour
     // channels, hasAudio, initialized, running
     [DllImport("AmfUnityPlugin")]
     private static extern float PipelineQuery(int id, [MarshalAs(UnmanagedType.LPWStr)] string type);
+	
+	// Must be called before pipeline is intialized
+    [DllImport("AmfUnityPlugin")]
+    private static extern int PipelineMuteAudio(int id, bool isMuted);
 
     [DllImport("AmfUnityPlugin")]
     private static extern int PipelineFillAudio(int id, ref float outData, int bufferSize);
@@ -162,7 +166,8 @@ public class Amf360UnityPlugin : MonoBehaviour
         PipelineCreate(uniqueID);
         PipelineSetAmbiMode(uniqueID, isAmbisonic);
         PipelineExecute(uniqueID, "file://" + File);
-        
+		PipelineMuteAudio(uniqueID, mute);
+		//
         PipelineExecute(uniqueID, "init");
         if (PipelineQuery(uniqueID, "initialized")>0)
         {
@@ -171,7 +176,7 @@ public class Amf360UnityPlugin : MonoBehaviour
             // information so these calls come after init above
             CreateTextureAndPassToPlugin();
             // Create audio objects if needed
-            playAudio = (PipelineQuery(uniqueID, "hasAudio") > 0.0f) && (!mute);
+            playAudio = (PipelineQuery(uniqueID, "hasAudio") > 0.0f);
             if (playAudio)
             {
                 CreateAudio();
@@ -241,7 +246,6 @@ public class Amf360UnityPlugin : MonoBehaviour
             // Pass in ambisonic angles
             Vector3 localEuler = this.GetComponentInChildren<Camera>().transform.localEulerAngles;
             PipelineSetAmbisonicAngles(uniqueID, -1 * localEuler.y, localEuler.x, localEuler.z);
-            Debug.Log(localEuler);
         }
     }
 

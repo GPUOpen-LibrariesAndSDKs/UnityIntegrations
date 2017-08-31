@@ -194,6 +194,17 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API PipelineSetAmbiMode(i
 }
 
 // --------------------------------------------------------------------------
+// Mute audio on pipeline
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API PipelineMuteAudio(int id, bool isMuted)
+{
+	UnityAVPipeline* avpipe = UnityAVPipeline::GetPipeline(id);
+	if (avpipe)
+	{
+		avpipe->MutePipeline(isMuted);
+	}
+}
+
+// --------------------------------------------------------------------------
 // Execute commands on the pipeline
 extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API PipelineSetAmbisonicAngles(int id, float theta, float phi, float rho)
 {

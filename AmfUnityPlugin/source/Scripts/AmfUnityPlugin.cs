@@ -66,19 +66,21 @@ public class AmfUnityPlugin : MonoBehaviour
 	[DllImport("AmfUnityPlugin")]
 	private static extern int PipelineExecute(int id, [MarshalAs(UnmanagedType.LPWStr)] string cmd);
 
-	// Query types are:
-	// fps, progressSize, progressPosition, texWidth, texHeight, sampleRate,
-	// channels, hasAudio, initialized, running
-	[DllImport("AmfUnityPlugin")]
+    // Query types are:
+    // fps, progressSize, progressPosition, texWidth, texHeight, sampleRate,
+    // channels, hasAudio, initialized, running
+    [DllImport("AmfUnityPlugin")]
 	private static extern float PipelineQuery(int id, [MarshalAs(UnmanagedType.LPWStr)] string type);
 
 	[DllImport("AmfUnityPlugin")]
 	private static extern int PipelineFillAudio(int id, ref float outData, int bufferSize);
 
-	// Public variables 
-	public string File;
-	public AudioSource audioSource;
-	public AudioClip audioClip;
+    // Must be called before pipeline is intialized
+    [DllImport("AmfUnityPlugin")]
+    private static extern int PipelineMuteAudio(int id, bool isMuted);
+
+    // Public variables 
+    public string File;
 	public bool mute;
 
 	// Private variables
@@ -88,6 +90,8 @@ public class AmfUnityPlugin : MonoBehaviour
 	private bool playAudio = false;
 	private int samplerate = 48000;
 	private int channels = 2;
+	private AudioSource audioSource;
+	private AudioClip audioClip;
 
 	IEnumerator Start()
 	{
@@ -99,9 +103,11 @@ public class AmfUnityPlugin : MonoBehaviour
 		uniqueID = GetUniqueID();
 		//
 		PipelineCreate(uniqueID);
-
+        //
 		PipelineExecute(uniqueID, "file://" + File);
+        PipelineMuteAudio(uniqueID, mute);
 		PipelineExecute(uniqueID, "init");
+        //
 		if (PipelineQuery(uniqueID, "initialized")>0)
 		{
 			PipelineExecute(uniqueID, "play");
@@ -109,7 +115,7 @@ public class AmfUnityPlugin : MonoBehaviour
 			// information so these calls come after init above
 			CreateTextureAndPassToPlugin();
 			// Create audio objects if needed
-			playAudio = (PipelineQuery(uniqueID, "hasAudio") > 0.0f) && (!mute);
+			playAudio = (PipelineQuery(uniqueID, "hasAudio") > 0.0f);
 			if (playAudio)
 			{
 				CreateAudio();

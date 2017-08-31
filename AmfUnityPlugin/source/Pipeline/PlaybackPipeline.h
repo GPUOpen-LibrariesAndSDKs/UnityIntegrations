@@ -62,6 +62,9 @@ public:
 
 	bool HasAudio() const;
 	bool isAmbisonic() const;
+	void Mute(bool mute);
+
+	virtual AMF_RESULT Stop() override;
 
 protected:
 	// Initialization and creation methods
@@ -80,6 +83,7 @@ private:
 	void*	m_device;
 	bool	m_hasAudio;
 	bool	m_ambisonicAudio;
+	bool	m_isMuted;
 };
 
 typedef std::shared_ptr<PlaybackPipeline> PlaybackPipelinePtr;

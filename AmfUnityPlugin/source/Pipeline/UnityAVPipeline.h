@@ -100,6 +100,8 @@ public:
 
 	bool paused() const;
 
+	void MutePipeline(bool isMuted);
+
 private:
 
 	void UpdateDLLSearchPaths();
@@ -124,6 +126,7 @@ private:
 	unsigned						m_width;
 	unsigned						m_height;
 	std::unique_ptr<PlaybackPipeline> m_pipeline;
+	HANDLE							m_sharedHandle;
 
 	bool							m_isPaused;
 	bool							m_ambiAudio;

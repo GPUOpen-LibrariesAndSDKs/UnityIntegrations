@@ -47,6 +47,12 @@ AudioPresenterBuffer::AudioPresenterBuffer()
 //-------------------------------------------------------------------------------------------------
 AudioPresenterBuffer::~AudioPresenterBuffer()
 {
+	Lock();
+	while (!m_audioBufferQueue.empty())
+	{
+		m_audioBufferQueue.pop();
+	}
+	Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -72,16 +78,12 @@ AMF_RESULT AudioPresenterBuffer::SubmitInput(amf::AMFData* pData)
 	if (dataSize > 0)
 	{
 		m_audioBuffer = static_cast<AMFAudioBuffer*>(pData);
-		amf_pts currentPts = m_audioBuffer->GetPts();
-
-		// Store audio data as seperate channels
 
 		// Prevent amf from getting too far ahead
-		while (m_audioBufferQueue.size() >= MAX_QUEUE_LENGTH)
+		if (m_audioBufferQueue.size() > MAX_QUEUE_LENGTH)
 		{
 			// if queue is maxed out wait approx. length of one buffer
-			amf_pts sleepTime = 0;
-			sleepTime = m_audioBufferQueue.front()->GetDuration();
+			amf_pts sleepTime = m_audioBufferQueue.front()->GetDuration() * (m_audioBufferQueue.size() - MAX_QUEUE_LENGTH);
 			m_Waiter.Wait(sleepTime);
 		}
 		Lock();
@@ -205,7 +207,6 @@ void AudioPresenterBuffer::StoreNewAudio(float* audioOut, int outSize)
 	{
 		return;
 	}
-	Lock();
 	size_t remainingSamples = m_audioBufferQueue.front()->GetSampleCount() * m_audioBufferQueue.front()->GetChannelCount() - m_audioPosition;
 
 	// copy data
@@ -232,5 +233,4 @@ void AudioPresenterBuffer::StoreNewAudio(float* audioOut, int outSize)
 	memcpy(audioOut, (float*)m_audioBufferQueue.front()->GetNative() + m_audioPosition, outSize * sizeof(float));
 
 	m_audioPosition += outSize;
-	Unlock();
 }

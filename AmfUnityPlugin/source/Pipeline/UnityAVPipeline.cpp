@@ -141,7 +141,6 @@ void UnityAVPipeline::PipelineExecute(const wchar_t* cmd)
 		//
 		g_AMFFactory.GetDebug()->AssertsEnable(true);
 		//
-		m_pipeline = std::make_unique<PlaybackPipeline>();
 		m_pipeline->SetParam(PlaybackPipeline::PARAM_NAME_INPUT, m_fileName.c_str());
 		m_pipeline->SetParam(PlaybackPipeline::PARAM_NAME_PRESENTER, amf::AMF_MEMORY_DX11);
 		m_pipeline->SetAmbisonicAudio(m_ambiAudio);
@@ -160,6 +159,7 @@ void UnityAVPipeline::PipelineExecute(const wchar_t* cmd)
 	}
 	else if (wcscmp(cmd, L"terminate") == 0)
 	{
+		m_pipeline->Stop();
 		m_pipeline.release();
 		g_AMFFactory.Terminate();
 		m_texture.Release();
@@ -357,7 +357,9 @@ UnityAVPipeline::UnityAVPipeline()
 	, m_height(0)
 	, m_isPaused(true)
 	, m_ambiAudio(false)
+	, m_sharedHandle(NULL)
 {
+	m_pipeline = std::make_unique<PlaybackPipeline>();
 }
 
 // --------------------------------------------------------------------------
@@ -400,6 +402,12 @@ void UnityAVPipeline::SetUnityDevice(void *device)
 void* UnityAVPipeline::GetUnityDevice()
 {
 	return m_udevice;
+}
+
+// --------------------------------------------------------------------------
+void UnityAVPipeline::MutePipeline(bool isMuted)
+{
+	m_pipeline->Mute(isMuted);
 }
 
 // --------------------------------------------------------------------------
@@ -481,12 +489,11 @@ void UnityAVPipeline::CopyResource()
 			CComQIPtr<IDXGIResource> pDxgiRes((ID3D11Texture2D*)surfTex);
 			if (pDxgiRes)
 			{
-				HANDLE hShared = 0;
-				pDxgiRes->GetSharedHandle(&hShared);
-				if (hShared)
+				pDxgiRes->GetSharedHandle(&m_sharedHandle);
+				if (m_sharedHandle)
 				{
 					CComQIPtr<ID3D11Resource> resource11;
-					m_udevice->OpenSharedResource(hShared, __uuidof(ID3D11Resource), (void**)&resource11);
+					m_udevice->OpenSharedResource(m_sharedHandle, __uuidof(ID3D11Resource), (void**)&resource11);
 					if (resource11)
 					{
 						m_ucontext->CopyResource(m_texture, resource11);

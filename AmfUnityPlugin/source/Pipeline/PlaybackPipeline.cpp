@@ -35,7 +35,7 @@
 
 
 PlaybackPipeline::PlaybackPipeline()
-	: m_device(NULL), m_hasAudio(false), m_ambisonicAudio(false)
+	: m_device(NULL), m_hasAudio(false), m_ambisonicAudio(false), m_isMuted(false)
 {
 }
 
@@ -143,7 +143,9 @@ void PlaybackPipeline::GetAudioData(float* audioOut, int outSize) const
 {
 	if (m_pAudioPresenter)
 	{
+		static_cast<AudioPresenterBuffer*>(m_pAudioPresenter.get())->Lock();
 		static_cast<AudioPresenterBuffer*>(m_pAudioPresenter.get())->StoreNewAudio(audioOut, outSize);
+		static_cast<AudioPresenterBuffer*>(m_pAudioPresenter.get())->Unlock();
 	}
 }
 
@@ -193,26 +195,34 @@ bool PlaybackPipeline::isAmbisonic() const
 	return m_ambisonicAudio;
 }
 
+void PlaybackPipeline::Mute(bool mute)
+{
+	m_isMuted = mute;
+}
+
 AMF_RESULT PlaybackPipeline::InitAudioPipeline(amf_uint32 iAudioStreamIndex, PipelineElementPtr pAudioSourceStream)
 {
-	if (iAudioStreamIndex >= 0 && m_pAudioPresenter != NULL && pAudioSourceStream != NULL)
+	if (iAudioStreamIndex >= 0 && m_pAudioPresenter != NULL && pAudioSourceStream != NULL && !m_isMuted)
 	{
 		Connect(PipelineElementPtr(new AMFComponentElement(m_pAudioDecoder)), 0, pAudioSourceStream, iAudioStreamIndex, m_bURL ? 1000 : 100, CT_ThreadQueue);
 		if (m_ambisonicAudio)
 		{
 			Connect(PipelineElementPtr(new AMFComponentElement(m_pAmbisonicRender)), 0, CT_Direct);
 		}
-		Connect(PipelineElementPtr(new AMFComponentElement(m_pAudioConverter)), 10);
-		Connect(m_pAudioPresenter, 10);
+		Connect(PipelineElementPtr(new AMFComponentElement(m_pAudioConverter)), 0, CT_Direct);
+		Connect(m_pAudioPresenter, 0, CT_Direct);
 	}
 	return AMF_OK;
 }
 
 AMF_RESULT  PlaybackPipeline::InitAudio(amf::AMFOutput* pOutput)
 {
-	AMF_RESULT res = AMF_OK;
 
-	// PlaybackPipelineBase::InitAudio(pOutput);
+	if (m_isMuted)
+	{
+		return AMF_OK;
+	}
+	AMF_RESULT res = AMF_OK;
 
 	amf_int64 codecID = 0;
 	amf_int64 streamBitRate = 0;
@@ -359,6 +369,20 @@ AMF_RESULT  PlaybackPipeline::InitAudio(amf::AMFOutput* pOutput)
 	CHECK_AMF_ERROR_RETURN(res, L"m_pAudioConverter->Init() failed");
 
 	pOutput->SetProperty(FFMPEG_DEMUXER_STREAM_ENABLED, true);
+
+	return AMF_OK;
+}
+
+AMF_RESULT PlaybackPipeline::Stop()
+{
+
+	PlaybackPipelineBase::Stop();
+
+	if (m_pAmbisonicRender != NULL)
+	{
+		m_pAmbisonicRender.Release();
+		m_pAmbisonicRender = NULL;
+	}
 
 	return AMF_OK;
 }
