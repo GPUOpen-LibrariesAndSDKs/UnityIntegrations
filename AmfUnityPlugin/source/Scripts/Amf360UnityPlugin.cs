@@ -99,6 +99,8 @@ public class Amf360UnityPlugin : MonoBehaviour
     [DllImport("AmfUnityPlugin")]
     private static extern void SetTextureFromUnity(int id, IntPtr texture, int w, int h);
     [DllImport("AmfUnityPlugin")]
+    private static extern void SetPathFromUnity(int id, [MarshalAs(UnmanagedType.LPWStr)] string path);
+    [DllImport("AmfUnityPlugin")]
     private static extern IntPtr GetRenderEventFunc();
 
     // Execute operations are:
@@ -165,7 +167,8 @@ public class Amf360UnityPlugin : MonoBehaviour
         //
         PipelineCreate(uniqueID);
         PipelineSetAmbiMode(uniqueID, isAmbisonic);
-        PipelineExecute(uniqueID, "file://" + File);
+        PipelineExecute(uniqueID, "file://" + Application.streamingAssetsPath + "/" + File);
+        SetPathFromUnity(uniqueID, Application.dataPath);
 		PipelineMuteAudio(uniqueID, mute);
 		//
         PipelineExecute(uniqueID, "init");
@@ -267,7 +270,10 @@ public class Amf360UnityPlugin : MonoBehaviour
 
         // Set up materials for left and right eyes
         leftEye.mainTexture = videoTexture;
-        rightEye.mainTexture = videoTexture;
+        if (StereoFormat != VideoFormat.Mono)
+        {
+            rightEye.mainTexture = videoTexture;
+        }
 
         switch (StereoFormat)
         {
@@ -276,8 +282,17 @@ public class Amf360UnityPlugin : MonoBehaviour
                 leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
                 leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
 
-                rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-                rightEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+                // Set right camera to see left side, switch off right material
+                // Get right camera eye
+                Camera[] stereoScopicCameras = GetComponentsInChildren<Camera>();
+
+                foreach(Camera eyeCam in stereoScopicCameras)
+                {
+                    if (eyeCam.cullingMask == 1 << LayerMask.NameToLayer("StereoEyeRight"))
+                    {
+                        eyeCam.cullingMask = 1 << LayerMask.NameToLayer("StereoEyeLeft");
+                    }
+                }
                 break;
             // Left eye on left
             case (VideoFormat.SideBySideLF):

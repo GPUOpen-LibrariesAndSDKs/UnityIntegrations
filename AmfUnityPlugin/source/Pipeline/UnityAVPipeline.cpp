@@ -295,15 +295,22 @@ void UnityAVPipeline::PipelineFillAudio(float audioOut[], int bufferLength)
 // --------------------------------------------------------------------------
 void UnityAVPipeline::UpdateDLLSearchPaths()
 {
-	wchar_t npath[MAX_PATH];
-	GetCurrentDirectoryW(MAX_PATH, npath);
-	std::wstring path = (const wchar_t*)&npath[0];
-	path += L"/Assets";
+	//wchar_t npath[MAX_PATH];
+	//GetCurrentDirectoryW(MAX_PATH, npath);
+	//std::wstring path = (const wchar_t*)&npath[0];
+	std::wstring path = m_pluginPath;
+	path += L"/Plugins";
 	if (!SetDllDirectory(path.c_str()))
 	{
 		DBSTREAMOUT("Failed to update the DLL search paths\n");
 		return;
 	}
+}
+
+// --------------------------------------------------------------------------
+void UnityAVPipeline::SetPluginPath(const wchar_t* path)
+{
+	m_pluginPath = path;
 }
 
 // --------------------------------------------------------------------------

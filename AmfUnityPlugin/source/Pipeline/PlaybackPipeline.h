@@ -75,6 +75,8 @@ protected:
 
     AMF_RESULT CreateAudioPresenter() override;
 
+	AMF_RESULT  InitVideoProcessor() override;
+
 	virtual AMF_RESULT  InitAudio(amf::AMFOutput* pOutput) override;
 	virtual AMF_RESULT  InitAudioPipeline(amf_uint32 iAudioStreamIndex, PipelineElementPtr pAudioSourceStream) override;
 	amf::AMFComponentPtr m_pAmbisonicRender;

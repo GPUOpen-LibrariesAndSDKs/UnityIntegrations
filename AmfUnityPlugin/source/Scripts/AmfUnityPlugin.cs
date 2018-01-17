@@ -54,7 +54,9 @@ public class AmfUnityPlugin : MonoBehaviour
 	// Extern functions
 	[DllImport("AmfUnityPlugin")]
 	private static extern void SetTextureFromUnity(int id, IntPtr texture, int w, int h);
-	[DllImport("AmfUnityPlugin")]
+    [DllImport("AmfUnityPlugin")]
+    private static extern void SetPathFromUnity(int id, [MarshalAs(UnmanagedType.LPWStr)] string path);
+    [DllImport("AmfUnityPlugin")]
 	private static extern IntPtr GetRenderEventFunc();
 
 	// Execute operations are:
@@ -74,7 +76,6 @@ public class AmfUnityPlugin : MonoBehaviour
 
 	[DllImport("AmfUnityPlugin")]
 	private static extern int PipelineFillAudio(int id, ref float outData, int bufferSize);
-
     // Must be called before pipeline is intialized
     [DllImport("AmfUnityPlugin")]
     private static extern int PipelineMuteAudio(int id, bool isMuted);
@@ -90,10 +91,10 @@ public class AmfUnityPlugin : MonoBehaviour
 	private bool playAudio = false;
 	private int samplerate = 48000;
 	private int channels = 2;
-	private AudioSource audioSource;
-	private AudioClip audioClip;
+    private AudioSource audioSource;
+    private AudioClip audioClip;
 
-	IEnumerator Start()
+    IEnumerator Start()
 	{
 		// 
 		CheckPlatform();
@@ -103,12 +104,12 @@ public class AmfUnityPlugin : MonoBehaviour
 		uniqueID = GetUniqueID();
 		//
 		PipelineCreate(uniqueID);
-        //
-		PipelineExecute(uniqueID, "file://" + File);
+        PipelineExecute(uniqueID, "file://" + Application.streamingAssetsPath + "/" + File);
+        SetPathFromUnity(uniqueID, Application.dataPath);
         PipelineMuteAudio(uniqueID, mute);
-		PipelineExecute(uniqueID, "init");
         //
-		if (PipelineQuery(uniqueID, "initialized")>0)
+        PipelineExecute(uniqueID, "init");
+        if (PipelineQuery(uniqueID, "initialized")>0)
 		{
 			PipelineExecute(uniqueID, "play");
 			// The following create methods query the pipeline

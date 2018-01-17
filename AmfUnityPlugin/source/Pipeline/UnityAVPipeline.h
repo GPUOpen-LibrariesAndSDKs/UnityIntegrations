@@ -102,6 +102,8 @@ public:
 
 	void MutePipeline(bool isMuted);
 
+	void SetPluginPath(const wchar_t* path);
+
 private:
 
 	void UpdateDLLSearchPaths();
@@ -130,6 +132,7 @@ private:
 
 	bool							m_isPaused;
 	bool							m_ambiAudio;
+	std::wstring					m_pluginPath;
 };
 
 // --------------------------------------------------------------------------

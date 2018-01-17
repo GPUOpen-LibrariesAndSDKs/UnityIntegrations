@@ -89,6 +89,26 @@ PlaybackPipeline::CreateVideoPresenter(amf::AMF_MEMORY_TYPE type, amf_int64 bitR
 	return AMF_OK;
 }
 
+AMF_RESULT  PlaybackPipeline::InitVideoProcessor()
+{
+	AMF_RESULT res = g_AMFFactory.GetFactory()->CreateComponent(m_pContext, AMFVideoConverter, &m_pVideoProcessor);
+	CHECK_AMF_ERROR_RETURN(res, L"g_AMFFactory.GetFactory()->CreateComponent(" << AMFVideoConverter << L") failed");
+
+	if (m_pVideoPresenter->SupportAllocator() && m_pContext->GetOpenCLContext() == NULL)
+	{
+		m_pVideoProcessor->SetProperty(AMF_VIDEO_CONVERTER_KEEP_ASPECT_RATIO, true);
+		m_pVideoProcessor->SetProperty(AMF_VIDEO_CONVERTER_FILL, true);
+		m_pVideoPresenter->SetProcessor(m_pVideoProcessor);
+	}
+
+	m_pVideoProcessor->SetProperty(AMF_VIDEO_CONVERTER_MEMORY_TYPE, m_pVideoPresenter->GetMemoryType());
+	m_pVideoProcessor->SetProperty(AMF_VIDEO_CONVERTER_COMPUTE_DEVICE, amf::AMF_MEMORY_COMPUTE_FOR_DX11);
+	m_pVideoProcessor->SetProperty(AMF_VIDEO_CONVERTER_OUTPUT_FORMAT, m_pVideoPresenter->GetInputFormat());
+
+	m_pVideoProcessor->Init(amf::AMF_SURFACE_NV12, m_iVideoWidth, m_iVideoHeight);
+	return AMF_OK;
+}
+
 AMF_RESULT
 PlaybackPipeline::CreateAudioPresenter()
 {
