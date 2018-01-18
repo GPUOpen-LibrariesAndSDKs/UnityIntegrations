@@ -13,7 +13,7 @@ if exist "%assetsDir%" (
 	)
 	
 	copy dist\*.cs  "%assetsDir%"
-	copy dist\AmfUnityPlugin.dll "%assetsDir%"
+	copy dist\AmfUnityPlugin.dll "%pluginDir%"
 
 	copy dist\amf-component-ffmpeg64.dll "%pluginDir%"
 	copy dist\avcodec-57.dll "%pluginDir%"
