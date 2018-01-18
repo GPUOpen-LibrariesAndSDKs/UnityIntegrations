@@ -2,6 +2,8 @@
 
 The AmfUnityPlugin uses the Advanced Media Framework (AMF) SDK for hardware accelerated video and audio playback on AMD GPUs in the Unity engine.
 
+The Unity engine we have tested with is version 2017.3.
+
 The steps required to setup this plugin are described next.
 
 ## AMD Driver 
