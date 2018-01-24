@@ -145,6 +145,10 @@ public class Amf360UnityPlugin : MonoBehaviour
         OverUnderLT,
         OverUnderRT
     };
+    public string LeftEyeLayer;
+    public string RightEyeLayer;
+    public bool MaterialOptimization;
+
 
     // Private variables
     enum AVState { kNone, kInit, kPlay, kPause };
@@ -270,29 +274,49 @@ public class Amf360UnityPlugin : MonoBehaviour
 
         // Set up materials for left and right eyes
         leftEye.mainTexture = videoTexture;
-        if (StereoFormat != VideoFormat.Mono)
+        if (MaterialOptimization)
+        {
+            if (StereoFormat != VideoFormat.Mono)
+            {
+                rightEye.mainTexture = videoTexture;
+            }
+        } else
         {
             rightEye.mainTexture = videoTexture;
         }
+        
 
         switch (StereoFormat)
         {
             // Monoscopic
             case (VideoFormat.Mono):
-                leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-                leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
 
-                // Set right camera to see left side, switch off right material
-                // Get right camera eye
-                Camera[] stereoScopicCameras = GetComponentsInChildren<Camera>();
-
-                foreach(Camera eyeCam in stereoScopicCameras)
+                if (MaterialOptimization)
                 {
-                    if (eyeCam.cullingMask == 1 << LayerMask.NameToLayer("StereoEyeRight"))
+                    leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                    leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+
+                    // Set right camera to see left side, switch off right material
+                    // Get right camera eye
+                    Camera[] stereoScopicCameras = GetComponentsInChildren<Camera>();
+
+                    foreach(Camera eyeCam in stereoScopicCameras)
                     {
-                        eyeCam.cullingMask = 1 << LayerMask.NameToLayer("StereoEyeLeft");
+                        if (eyeCam.cullingMask == 1 << LayerMask.NameToLayer(RightEyeLayer))
+                        {
+                            eyeCam.cullingMask = 1 << LayerMask.NameToLayer(LeftEyeLayer);
+                        }
                     }
                 }
+                else
+                {
+                    leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                    leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+
+                    rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                    rightEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+                }
+
                 break;
             // Left eye on left
             case (VideoFormat.SideBySideLF):

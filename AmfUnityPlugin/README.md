@@ -47,16 +47,8 @@ Make a distribution directory by running the makeDist.cmd script.
 
 ## Using with Unity
 
-Do the following to build a project that can display the video:
-
-- Create a Quad
-- Create a Material
-- Assign the Material to the Quad
-- Change the Material tiling to 1,-1 so the video is not inverted
-- Attach the source/Scripts/AmfUnityPlugin.cs to the Quad
-- Copy a mp4 video into the Assets/StreamingAssets folder of the project
-- Set the name of the video in the Inspector of the Quad(plugin will look in Assets/StreamingAssets directory)
-- Save the Project
+Detailed instructions on how to setup and use the plugin within Unity are included in the
+AmfUnityPlugin.cs script.
 
 ## Copying to a Unity project
 
@@ -73,7 +65,8 @@ Running the game will display the video on the Quad surface along with audio.
 # 360 Video
 
 360 video is supported by using the source/Scripts/Amf360UnityPlugin.cs script instead of the source/Scripts/AmfUnityPlugin.cs. The 360 script
-contains detailed instructions on how to set up geometry, materials and lights Assets.  Follow the build instructions above to build AMF and the plugin and also which DLLs need to be put into the Asset/Plugins folder.
+contains detailed instructions on how to set up geometry, materials and lights Assets.  Follow the build instructions above to build AMF and 
+the plugin and also which DLLs need to be put into the Asset/Plugins folder using the utility scripts.
 
 
 # Notes for repository maintainers

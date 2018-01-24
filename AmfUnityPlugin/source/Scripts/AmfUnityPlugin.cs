@@ -43,6 +43,20 @@
 // stated in the Software License Agreement.
 //
 
+// Do the following to build a project that can display the video:
+// 
+// - Create a Quad
+// - Create a Material
+// - Assign the Material to the Quad
+// - Change the new material's tiling to 1,-1 so the video is not inverted
+// - Copy a mp4 video into the Assets/StreamingAssets folder of the project
+// - Save the Project
+// - Use the dist2Proj.cmd helper script to copy the DLLs and .cs scripts into the new project
+// - Attach the AmfUnityPlugin.cs to the Quad
+// - Set the name of the video in the Inspector of the Quad(plugin will look in Assets/StreamingAssets directory)
+// - Play the game to see the video
+//
+
 using UnityEngine;
 using System;
 using System.Collections;
