@@ -49,13 +49,17 @@
 // This script makes use of the AmfUnityPlugin. The AmfUnityPlugin must be
 // included for this script to work.
 //
+// Select a VR display mode so that access to target eyes will be available
+// in the following steps.
+//
 // Add two cameras to the scene, one for each eye. Around each camera create a
 // sphere that faces inwards, this can be done either via a script (such as
 // http://wiki.unity3d.com/index.php/ReverseNormals) or through building a new
 // sphere model. Create two materials, one for each eye. Apply each material to
 // the appropriate sphere. Create two new GameObject layers, one for each eye.
 // Set each eye sphere's object layer to only the layer for that eye. Set the
-// culling mask for each camera to the matching object layer. After this set up
+// culling mask for each camera to the matching object layer and also set the 
+// Target Eye of those cameras to the appropriate eye. After this set up
 // there should be 2 cameras and 2 spheres, each with a matching culling mask and
 // object layer. Each sphere should also have it's own material matching material.
 // 

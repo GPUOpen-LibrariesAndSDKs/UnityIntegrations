@@ -21,7 +21,7 @@ If Mercurial is not available then download the files manually and copy the head
 
 ## Building AMF 
 
-Open the source\AMF\amf\public\samples\CPPSamples_vs2013.sln solution file and build AMF in Release x64 mode.
+Open the source\AMF\amf\public\samples\CPPSamples_vs2013.sln solution file and build the AMF ComponentsFFMPEG project in Release x64 mode.
 
 - AMF is now a subtree of this repo so it does not need to be downloaded.
 
@@ -47,7 +47,7 @@ Make a distribution directory by running the makeDist.cmd script.
 
 ## Using with Unity
 
-Detailed instructions on how to setup and use the plugin within Unity are included in the
+Detailed instructions on how to setup and use a scene within Unity are included in the
 AmfUnityPlugin.cs script.
 
 ## Copying to a Unity project

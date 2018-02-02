@@ -2,11 +2,12 @@ echo off
 
 set dist=.\dist
 if exist "%dist%" (
-	echo Removing distribution directory %dist%
-	rd /s /q "%dist%"
+	echo Cleaning %dist% directory
+	del %dist%\*.dll
+	del %dist%\*.cs
+) else (
+	mkdir %dist%
 )
-
-mkdir %dist%
 
 set plugin=.\bin\x64\Release\AmfUnityPlugin.dll
 set dbgplugin=.\bin\x64\Debug\AmfUnityPlugin.dll
@@ -38,4 +39,3 @@ if exist "%dlldir%" (
 
 copy .\source\scripts\Amf360UnityPlugin.cs %dist%
 copy .\source\scripts\AmfUnityPlugin.cs %dist%
-
