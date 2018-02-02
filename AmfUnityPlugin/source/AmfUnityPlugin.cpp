@@ -72,6 +72,16 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API SetTextureFromUnity(i
 		avpipe->SetDim(w, h);
 	}
 }
+// --------------------------------------------------------------------------
+// SetPathFromUnity sets the path to the support DLLs for AMF
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API SetPathFromUnity(int id, const wchar_t* cmd)
+{
+	UnityAVPipeline* avpipe = UnityAVPipeline::GetPipeline(id);
+	if (avpipe)
+	{
+		avpipe->SetPluginPath(cmd);
+	}
+}
 
 // --------------------------------------------------------------------------
 // Handle device events for D3D11

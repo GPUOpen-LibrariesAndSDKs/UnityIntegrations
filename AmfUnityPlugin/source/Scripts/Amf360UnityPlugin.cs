@@ -49,13 +49,17 @@
 // This script makes use of the AmfUnityPlugin. The AmfUnityPlugin must be
 // included for this script to work.
 //
+// Select a VR display mode so that access to target eyes will be available
+// in the following steps.
+//
 // Add two cameras to the scene, one for each eye. Around each camera create a
 // sphere that faces inwards, this can be done either via a script (such as
 // http://wiki.unity3d.com/index.php/ReverseNormals) or through building a new
 // sphere model. Create two materials, one for each eye. Apply each material to
 // the appropriate sphere. Create two new GameObject layers, one for each eye.
 // Set each eye sphere's object layer to only the layer for that eye. Set the
-// culling mask for each camera to the matching object layer. After this set up
+// culling mask for each camera to the matching object layer and also set the 
+// Target Eye of those cameras to the appropriate eye. After this set up
 // there should be 2 cameras and 2 spheres, each with a matching culling mask and
 // object layer. Each sphere should also have it's own material matching material.
 // 
@@ -98,6 +102,8 @@ public class Amf360UnityPlugin : MonoBehaviour
     // Extern functions
     [DllImport("AmfUnityPlugin")]
     private static extern void SetTextureFromUnity(int id, IntPtr texture, int w, int h);
+    [DllImport("AmfUnityPlugin")]
+    private static extern void SetPathFromUnity(int id, [MarshalAs(UnmanagedType.LPWStr)] string path);
     [DllImport("AmfUnityPlugin")]
     private static extern IntPtr GetRenderEventFunc();
 
@@ -143,6 +149,10 @@ public class Amf360UnityPlugin : MonoBehaviour
         OverUnderLT,
         OverUnderRT
     };
+    public string LeftEyeLayer;
+    public string RightEyeLayer;
+    public bool MaterialOptimization;
+
 
     // Private variables
     enum AVState { kNone, kInit, kPlay, kPause };
@@ -165,7 +175,8 @@ public class Amf360UnityPlugin : MonoBehaviour
         //
         PipelineCreate(uniqueID);
         PipelineSetAmbiMode(uniqueID, isAmbisonic);
-        PipelineExecute(uniqueID, "file://" + File);
+        PipelineExecute(uniqueID, "file://" + Application.streamingAssetsPath + "/" + File);
+        SetPathFromUnity(uniqueID, Application.dataPath);
 		PipelineMuteAudio(uniqueID, mute);
 		//
         PipelineExecute(uniqueID, "init");
@@ -267,17 +278,49 @@ public class Amf360UnityPlugin : MonoBehaviour
 
         // Set up materials for left and right eyes
         leftEye.mainTexture = videoTexture;
-        rightEye.mainTexture = videoTexture;
+        if (MaterialOptimization)
+        {
+            if (StereoFormat != VideoFormat.Mono)
+            {
+                rightEye.mainTexture = videoTexture;
+            }
+        } else
+        {
+            rightEye.mainTexture = videoTexture;
+        }
+        
 
         switch (StereoFormat)
         {
             // Monoscopic
             case (VideoFormat.Mono):
-                leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-                leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
 
-                rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
-                rightEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+                if (MaterialOptimization)
+                {
+                    leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                    leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+
+                    // Set right camera to see left side, switch off right material
+                    // Get right camera eye
+                    Camera[] stereoScopicCameras = GetComponentsInChildren<Camera>();
+
+                    foreach(Camera eyeCam in stereoScopicCameras)
+                    {
+                        if (eyeCam.cullingMask == 1 << LayerMask.NameToLayer(RightEyeLayer))
+                        {
+                            eyeCam.cullingMask = 1 << LayerMask.NameToLayer(LeftEyeLayer);
+                        }
+                    }
+                }
+                else
+                {
+                    leftEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                    leftEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+
+                    rightEye.SetTextureOffset("_MainTex", new Vector2(1, 1));
+                    rightEye.SetTextureScale("_MainTex", new Vector2(-1, -1));
+                }
+
                 break;
             // Left eye on left
             case (VideoFormat.SideBySideLF):

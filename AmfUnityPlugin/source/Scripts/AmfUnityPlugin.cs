@@ -43,6 +43,20 @@
 // stated in the Software License Agreement.
 //
 
+// Do the following to build a project that can display the video:
+// 
+// - Create a Quad
+// - Create a Material
+// - Assign the Material to the Quad
+// - Change the new material's tiling to 1,-1 so the video is not inverted
+// - Copy a mp4 video into the Assets/StreamingAssets folder of the project
+// - Save the Project
+// - Use the dist2Proj.cmd helper script to copy the DLLs and .cs scripts into the new project
+// - Attach the AmfUnityPlugin.cs to the Quad
+// - Set the name of the video in the Inspector of the Quad(plugin will look in Assets/StreamingAssets directory)
+// - Play the game to see the video
+//
+
 using UnityEngine;
 using System;
 using System.Collections;
@@ -54,7 +68,9 @@ public class AmfUnityPlugin : MonoBehaviour
 	// Extern functions
 	[DllImport("AmfUnityPlugin")]
 	private static extern void SetTextureFromUnity(int id, IntPtr texture, int w, int h);
-	[DllImport("AmfUnityPlugin")]
+    [DllImport("AmfUnityPlugin")]
+    private static extern void SetPathFromUnity(int id, [MarshalAs(UnmanagedType.LPWStr)] string path);
+    [DllImport("AmfUnityPlugin")]
 	private static extern IntPtr GetRenderEventFunc();
 
 	// Execute operations are:
@@ -74,7 +90,6 @@ public class AmfUnityPlugin : MonoBehaviour
 
 	[DllImport("AmfUnityPlugin")]
 	private static extern int PipelineFillAudio(int id, ref float outData, int bufferSize);
-
     // Must be called before pipeline is intialized
     [DllImport("AmfUnityPlugin")]
     private static extern int PipelineMuteAudio(int id, bool isMuted);
@@ -90,10 +105,10 @@ public class AmfUnityPlugin : MonoBehaviour
 	private bool playAudio = false;
 	private int samplerate = 48000;
 	private int channels = 2;
-	private AudioSource audioSource;
-	private AudioClip audioClip;
+    private AudioSource audioSource;
+    private AudioClip audioClip;
 
-	IEnumerator Start()
+    IEnumerator Start()
 	{
 		// 
 		CheckPlatform();
@@ -103,12 +118,12 @@ public class AmfUnityPlugin : MonoBehaviour
 		uniqueID = GetUniqueID();
 		//
 		PipelineCreate(uniqueID);
-        //
-		PipelineExecute(uniqueID, "file://" + File);
+        PipelineExecute(uniqueID, "file://" + Application.streamingAssetsPath + "/" + File);
+        SetPathFromUnity(uniqueID, Application.dataPath);
         PipelineMuteAudio(uniqueID, mute);
-		PipelineExecute(uniqueID, "init");
         //
-		if (PipelineQuery(uniqueID, "initialized")>0)
+        PipelineExecute(uniqueID, "init");
+        if (PipelineQuery(uniqueID, "initialized")>0)
 		{
 			PipelineExecute(uniqueID, "play");
 			// The following create methods query the pipeline
