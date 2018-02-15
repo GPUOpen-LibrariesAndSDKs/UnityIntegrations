@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\Pipeline\AudioPresenterBuffer.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pipeline\PlaybackPipeline.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pipeline\VideoPresenterTexture.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AmfUnityStitchMediaPlugin.cpp" />
+    <ClCompile Include="..\source\Pipeline\UnityStitchPipeline.Commands.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pipeline\UnityStitchPipeline.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\Pipeline\AudioPresenterBuffer.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pipeline\PlaybackPipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pipeline\VideoPresenterTexture.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityEventQueue.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphics.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D9.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D11.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsD3D12.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityGraphicsMetal.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Unity\IUnityInterface.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Utils\ImageData.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pipeline\UnityStitchPipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Pipeline">
+      <UniqueIdentifier>{0cbb9d52-7408-477d-8436-ed61a5b2399d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{421a57a2-b87c-4a95-bc37-dcfcee9d5d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Unity">
+      <UniqueIdentifier>{4cf7ba57-dd73-400f-98aa-b870c60857d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{b2c56999-29ac-47b8-848d-91e1154513be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{288671a3-a2d9-4fbd-9dcb-0753b6154839}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
