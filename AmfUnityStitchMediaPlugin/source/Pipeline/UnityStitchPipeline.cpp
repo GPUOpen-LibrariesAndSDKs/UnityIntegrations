@@ -117,7 +117,7 @@ void UnityStitchPipeline::PipelineExecute(const wchar_t* cmd)
 		return;
 	}
 	std::wstring parameter;
-
+	
 	if (isCommand(cmd, L"media://", parameter))
 	{
 		if (!FileExists(parameter))
@@ -140,6 +140,13 @@ void UnityStitchPipeline::PipelineExecute(const wchar_t* cmd)
 			DBSTREAMOUT("Using PTS file '" << m_ptGuiFilepath << "'\n");
 		}
 	}
+	else if (isCommand(cmd, L"cameramode://", parameter))
+	{
+		int i = std::stoi(parameter);
+		CAMLIVE_MODE_ENUM mode = (CAMLIVE_MODE_ENUM)i;
+		SetParam(PARAM_NAME_ZCAMLIVE_MODE, mode);
+
+	}
 	else if (isCommand(cmd, L"dllPath://", parameter))
 	{
 		m_dllFolder = parameter;
@@ -157,6 +164,7 @@ void UnityStitchPipeline::PipelineExecute(const wchar_t* cmd)
 	}
 	else if (wcscmp(cmd, L"terminate") == 0)
 	{
+		Stop();
 		g_AMFFactory.Terminate();
 		m_texture.Release();
 		m_initializedPipeline = false;
@@ -461,7 +469,7 @@ AMF_RESULT UnityStitchPipeline::InitStitch(
 		}
 	}
 
-	const bool forceCamera = false;
+	const bool forceCamera = true;
 
 	if (forceCamera || m_mediaFile.size() == 0)
 	{
