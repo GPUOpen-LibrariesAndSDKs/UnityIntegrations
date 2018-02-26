@@ -143,9 +143,7 @@ void UnityStitchPipeline::PipelineExecute(const wchar_t* cmd)
 	else if (isCommand(cmd, L"cameramode://", parameter))
 	{
 		int i = std::stoi(parameter);
-		CAMLIVE_MODE_ENUM mode = (CAMLIVE_MODE_ENUM)i;
-		SetParam(PARAM_NAME_ZCAMLIVE_MODE, mode);
-
+		m_cameraMode = (CAMLIVE_MODE_ENUM)i;
 	}
 	else if (isCommand(cmd, L"dllPath://", parameter))
 	{
@@ -162,6 +160,12 @@ void UnityStitchPipeline::PipelineExecute(const wchar_t* cmd)
 			return;
 		}
 	}
+	else if (isCommand(cmd, L"forcecamera://", parameter))
+	{
+		int i = std::stoi(parameter);
+		m_forceCamera = (bool)i;
+	}
+
 	else if (wcscmp(cmd, L"terminate") == 0)
 	{
 		Stop();
@@ -465,15 +469,17 @@ AMF_RESULT UnityStitchPipeline::InitStitch(
 		if (FAILED(hr))
 		{
 			DBSTREAMOUT("Could not create D3D11 device\n");
+
 			return AMF_NOT_INITIALIZED;
 		}
 	}
 
-	const bool forceCamera = true;
 
-	if (forceCamera || m_mediaFile.size() == 0)
+
+	if (m_forceCamera || m_mediaFile.size() == 0)
 	{
-		SetParam(PARAM_NAME_ZCAMLIVE_MODE, CAMLIVE_MODE_THETAS);
+		SetParam(PARAM_NAME_ZCAMLIVE_MODE, m_cameraMode);
+		//SetParam(PARAM_NAME_ZCAMLIVE_MODE, CAMLIVE_MODE_THETAS);
 	}
 	else
 	{

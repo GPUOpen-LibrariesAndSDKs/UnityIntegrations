@@ -118,6 +118,8 @@ private:
 	std::wstring					m_dllFolder;// ffmpeg, stitching dll, etc. 
 	std::wstring					m_ptGuiFilepath;
 	std::wstring					m_mediaFile;
+	int								m_cameraMode;
+	bool							m_forceCamera;
 
 
 	void* m_mediaOutput;
