@@ -1,0 +1,3 @@
+[submodule "AmfUnityStitchMediaPlugin/source/AMF"]
+	path = AmfUnityStitchMediaPlugin/source/AMF
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git
