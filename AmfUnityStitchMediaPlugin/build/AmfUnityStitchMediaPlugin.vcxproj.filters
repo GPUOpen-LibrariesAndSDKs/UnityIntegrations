@@ -10,12 +10,14 @@
     <ClCompile Include="..\source\Pipeline\VideoPresenterTexture.cpp">
       <Filter>Pipeline</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\AmfUnityStitchMediaPlugin.cpp" />
     <ClCompile Include="..\source\Pipeline\UnityStitchPipeline.Commands.cpp">
       <Filter>Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Pipeline\UnityStitchPipeline.cpp">
       <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AmfUnityStitchMediaPlugin.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
